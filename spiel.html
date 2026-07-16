@@ -23,7 +23,7 @@
         const ctx = canvas.getContext('2d');
         
         let player = {x: 50, y: 350, hasPhone: false};
-        let teacher = {x: 300, y: 200};
+        let teacher = {x: 300, y: 200, stopped: false};
         let phone = {x: 550, y: 50};
         let door = {x: 580, y: 350, w: 20, h: 50};
         let confetti = [];
@@ -35,18 +35,25 @@
         }
 
         function update() {
-            if (teacher.x < player.x) teacher.x += 0.8; else teacher.x -= 0.8;
-            if (teacher.y < player.y) teacher.y += 0.8; else teacher.y -= 0.8;
+            // Lehrer bewegt sich nur, wenn er nicht gestoppt wurde[span_2](start_span)[span_2](end_span)
+            if (!teacher.stopped) {
+                if (teacher.x < player.x) teacher.x += 0.8; else teacher.x -= 0.8;
+                if (teacher.y < player.y) teacher.y += 0.8; else teacher.y -= 0.8;
+            }
 
-            if (Math.abs(player.x - teacher.x) < 20 && Math.abs(player.y - teacher.y) < 20) {
+            // Kollision Lehrer
+            if (!teacher.stopped && Math.abs(player.x - teacher.x) < 20 && Math.abs(player.y - teacher.y) < 20) {
                 player = {x: 50, y: 350, hasPhone: false};
             }
 
+            // Handy einsammeln
             if (!player.hasPhone && Math.abs(player.x - phone.x) < 20 && Math.abs(player.y - phone.y) < 20) {
                 player.hasPhone = true;
+                teacher.stopped = true; // Lehrer stoppt bei Sieg[span_3](start_span)[span_3](end_span)
                 for(let i=0; i<30; i++) confetti.push({x: phone.x, y: phone.y, dx: Math.random()*4-2, dy: Math.random()*4-2});
             }
 
+            // Siegbedingung
             if (player.hasPhone && player.x > door.x - 20) {
                 document.getElementById('win-screen').classList.remove('hidden');
             }
@@ -54,8 +61,6 @@
 
         function draw() {
             ctx.clearRect(0,0,600,400);
-            
-            // Zeichne Ausgang
             ctx.fillStyle = "#10b981"; ctx.fillRect(door.x, door.y, door.w, door.h);
             
             drawPerson(player.x, player.y, player.hasPhone ? "#fbbf24" : "#38bdf8");
@@ -63,7 +68,6 @@
             
             if(!player.hasPhone) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(phone.x, phone.y, 15, 15); }
             
-            // Confetti Animation
             confetti.forEach(c => {
                 c.x += c.dx; c.y += c.dy;
                 ctx.fillStyle = "gold"; ctx.fillRect(c.x, c.y, 4, 4);
@@ -74,10 +78,16 @@
         }
 
         window.addEventListener('keydown', (e) => {
-            if(e.key === 'ArrowRight') player.x += 20;
-            if(e.key === 'ArrowLeft') player.x -= 20;
-            if(e.key === 'ArrowUp') player.y -= 20;
-            if(e.key === 'ArrowDown') player.y += 20;
+            let nextX = player.x;
+            let nextY = player.y;
+            if(e.key === 'ArrowRight') nextX += 20;
+            if(e.key === 'ArrowLeft') nextX -= 20;
+            if(e.key === 'ArrowUp') nextY -= 20;
+            if(e.key === 'ArrowDown') nextY += 20;
+
+            // Grenzen einhalten[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span)
+            if (nextX >= 0 && nextX <= 580) player.x = nextX;
+            if (nextY >= 0 && nextY <= 380) player.y = nextY;
         });
 
         draw();
