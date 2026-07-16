@@ -12,7 +12,7 @@
 </head>
 <body>
     <h1>Level 2: Unbemerkt abschreiben</h1>
-    <p>Leertaste halten zum Abschreiben. Drückst du bei Gelb oder Rot, fängst du von vorne an!</p>
+    <p>Leertaste halten zum Abschreiben. Nutze die gelbe Phase, aber drückst du bei ROT, fängst du von vorne an!</p>
     <canvas id="game" width="600" height="400"></canvas>
     <div id="win-screen" class="hidden">
         <p>Perfekt abgeschrieben! Auf zum Flur.</p>
@@ -44,7 +44,7 @@
             ctx.fillStyle = "black";
             if (teacherState === 1) {
                 // Profilansicht (dreht sich gerade) -> nur ein Auge sichtbar
-                let eyeX = nextTeacherState === 2 ? 315 : 280; // Guckt je nach Richtung anders
+                let eyeX = nextTeacherState === 2 ? 315 : 280; 
                 ctx.fillRect(eyeX, 75, 8, 8);
             } else if (teacherState === 2) {
                 // Frontalansicht (schaut zur Klasse) -> böse Augen
@@ -54,7 +54,6 @@
                 ctx.fillRect(282, 72, 12, 4);
                 ctx.fillRect(306, 72, 12, 4);
             }
-            // Bei State 0 (Grün) zeichnen wir keine Augen, da er zur Tafel schaut.
         }
 
         function drawPlayer() {
@@ -73,13 +72,11 @@
             ctx.fillRect(275, 285, 30, 20);
 
             // Arm & Stift (Abschreibanimation)
-            ctx.fillStyle = "#facc15"; // Gelber Stift
+            ctx.fillStyle = "#facc15"; 
             if (isWriting && progress < 100) {
-                // Stift bewegt sich wild hin und her
                 let offset = Math.sin(Date.now() / 40) * 12;
                 ctx.fillRect(285 + offset, 280, 4, 15);
             } else {
-                // Stift ruht
                 ctx.fillRect(310, 290, 15, 4);
             }
         }
@@ -99,13 +96,13 @@
                 teacherState = 1; stateTimer = 0; nextTeacherState = 0;
             }
 
-            // Abschreib-Logik
+            // Abschreib-Logik: JETZT IST GELB SICHER!
             if (isWriting && progress < 100) {
-                if (teacherState === 1 || teacherState === 2) {
-                    // Erwischt während Gelb oder Rot!
+                if (teacherState === 2) {
+                    // Erwischt! (Nur bei Rot)
                     progress = 0; 
                 } else {
-                    // SEHR langsamer Fortschritt (ca. 15-20 Sekunden durchgängiges Schreiben)
+                    // Fortschritt bei Grün und Gelb
                     progress += 0.08; 
                 }
             }
