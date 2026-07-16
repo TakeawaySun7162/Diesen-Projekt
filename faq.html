@@ -2,23 +2,42 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ | Schul-Mentor</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #f1f5f9; margin: 0; padding: 20px; }
-        .faq-card { background: #1e293b; border-left: 5px solid #38bdf8; padding: 20px; margin-bottom: 20px; border-radius: 8px; transition: 0.4s; }
-        .faq-card:hover { transform: scale(1.02); background: #334155; }
-        nav { text-align: center; margin-bottom: 40px; }
-        nav a { color: #38bdf8; margin: 0 10px; text-decoration: none; }
+        :root { --primary: #1a2a3a; --accent: #4a90e2; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; margin: 0; }
+        nav { background: var(--primary); padding: 1rem; text-align: center; }
+        nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; }
+        .content { max-width: 800px; margin: 40px auto; padding: 20px; }
+        .faq-card { 
+            border: 2px solid #ddd; padding: 20px; border-radius: 12px; margin-bottom: 20px;
+            transition: 0.3s; background: #fff;
+        }
+        .faq-card:hover { border-color: var(--accent); background: #f9f9f9; cursor: pointer; }
+        h3 { color: var(--primary); margin-top: 0; }
     </style>
 </head>
 <body>
-    <nav><a href="index.html">Start</a> | <a href="faq.html">FAQ</a> | <a href="kontakt.html">Kontakt</a></nav>
-    <div style="max-width: 800px; margin: auto;">
+    <nav>
+        <a href="index.html">Startseite</a>
+        <a href="faq.html">Typische Fragen</a>
+        <a href="kontakt.html">Kontakt</a>
+    </nav>
+    <div class="content">
         <h2>FAQ</h2>
-        <div class="faq-card"><h3>Sekundenschlaf im Unterricht?</h3><p>Profi-Tipp: Kopf aufs Buch, Hand zum Stift, „Ich-denke-tief-nach“-Blick. Klappt in 60% der Fälle!</p></div>
-        <div class="faq-card"><h3>Profi-Zocker als Ziel?</h3><p>Wir machen daraus „strategisches Karriere-Gaming“. Dein Weg aus dem Keller, direkt an die Spitze.</p></div>
-        <div class="faq-card"><h3>Warum Mentor?</h3><p>Schwerkraft war gegen den Astronauten-Plan. Schule ist die neue Mission.</p></div>
+        <div class="faq-card">
+            <h3>Was mache ich, wenn ich im Unterricht kurz vor dem Sekundenschlaf stehe?</h3>
+            <p>Profi-Tipp: Den Kopf auf das aufgeschladene Buch stützen, die Hand so positionieren, als würde man angestrengt mitschreiben, und dabei den „Ich-denke-tief-nach“-Blick aufsetzen.</p>
+        </div>
+        <div class="faq-card">
+            <h3>Profi-Zocker als Lebensziel?</h3>
+            <p>Absolut! Ich helfe dir dabei, eine Strategie zu entwickeln, wie du das mit „echter“ Arbeit kombinierst. Wir nennen das dann „strategisches Karriere-Gaming“.</p>
+        </div>
+        <div class="faq-card">
+            <h3>Warum Mentor statt Astronaut?</h3>
+            <p>Schwerkraft und Weltraumessen haben mir einen Strich durch die Rechnung gemacht. Schule ist weniger anstrengend für die Ohren, aber ähnlich aufregend.</p>
+        </div>
     </div>
 </body>
 </html>
-
