@@ -12,10 +12,10 @@
 </head>
 <body>
     <h1>Level 2: Unbemerkt abschreiben</h1>
-    <p>Leertaste halten zum Abschreiben. Vorsicht bei Gelb!</p>
+    <p>Leertaste halten zum Abschreiben. Drückst du bei Gelb oder Rot, fängst du von vorne an!</p>
     <canvas id="game" width="600" height="400"></canvas>
     <div id="win-screen" class="hidden">
-        <p>Erledigt! Auf zum Ausgang.</p>
+        <p>Perfekt abgeschrieben! Auf zum Flur.</p>
         <button id="next-btn" onclick="window.location.href='level3.html'">Zu Level 3</button>
     </div>
 
@@ -25,33 +25,92 @@
         
         let progress = 0;
         let isWriting = false;
-        // States: 0 = grün (sicher), 1 = gelb (warnung), 2 = rot (erwischt)
+        
+        // Lehrer-Zustände: 0 = Grün (Tafel), 1 = Gelb (dreht sich), 2 = Rot (schaut zur Klasse)
         let teacherState = 0; 
+        let nextTeacherState = 2; // Merkt sich, wohin die Drehung geht
+        let stateTimer = 0;
+        let lastTime = Date.now();
 
-        // Lehrer-Zustände steuern
-        setInterval(() => {
-            let rand = Math.random();
-            if (rand < 0.6) teacherState = 0;
-            else if (rand < 0.8) teacherState = 1;
-            else teacherState = 2;
-        }, 1200);
+        function drawTeacher() {
+            // Körper
+            ctx.fillStyle = teacherState === 0 ? "#10b981" : (teacherState === 1 ? "#fbbf24" : "#ef4444");
+            ctx.fillRect(270, 100, 60, 80);
+            
+            // Kopf
+            ctx.beginPath(); ctx.arc(300, 90, 30, 0, Math.PI * 2); ctx.fill(); 
 
-        function drawTeacher(state) {
-            ctx.fillStyle = state === 0 ? "#10b981" : (state === 1 ? "#fbbf24" : "#ef4444");
-            ctx.beginPath(); ctx.arc(300, 100, 40, 0, Math.PI * 2); ctx.fill(); // Kopf
-            // Böse Augen
+            // Gesicht & Drehanimation
             ctx.fillStyle = "black";
-            ctx.fillRect(280, 85, 8, 8); ctx.fillRect(312, 85, 8, 8);
+            if (teacherState === 1) {
+                // Profilansicht (dreht sich gerade) -> nur ein Auge sichtbar
+                let eyeX = nextTeacherState === 2 ? 315 : 280; // Guckt je nach Richtung anders
+                ctx.fillRect(eyeX, 75, 8, 8);
+            } else if (teacherState === 2) {
+                // Frontalansicht (schaut zur Klasse) -> böse Augen
+                ctx.fillRect(285, 80, 8, 8); 
+                ctx.fillRect(307, 80, 8, 8);
+                // Böse Augenbrauen
+                ctx.fillRect(282, 72, 12, 4);
+                ctx.fillRect(306, 72, 12, 4);
+            }
+            // Bei State 0 (Grün) zeichnen wir keine Augen, da er zur Tafel schaut.
+        }
+
+        function drawPlayer() {
+            // Spieler Körper
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillRect(280, 250, 40, 50);
+            // Kopf
+            ctx.beginPath(); ctx.arc(300, 235, 20, 0, Math.PI * 2); ctx.fill();
+            
+            // Tisch
+            ctx.fillStyle = "#854d0e"; 
+            ctx.fillRect(240, 280, 120, 30);
+            
+            // Papier
+            ctx.fillStyle = "white";
+            ctx.fillRect(275, 285, 30, 20);
+
+            // Arm & Stift (Abschreibanimation)
+            ctx.fillStyle = "#facc15"; // Gelber Stift
+            if (isWriting && progress < 100) {
+                // Stift bewegt sich wild hin und her
+                let offset = Math.sin(Date.now() / 40) * 12;
+                ctx.fillRect(285 + offset, 280, 4, 15);
+            } else {
+                // Stift ruht
+                ctx.fillRect(310, 290, 15, 4);
+            }
         }
 
         function update() {
+            let now = Date.now();
+            let dt = now - lastTime;
+            lastTime = now;
+            stateTimer += dt;
+
+            // Lehrer Logik (flüssiges Umdrehen)
+            if (teacherState === 0 && stateTimer > Math.random() * 2000 + 1500) {
+                teacherState = 1; stateTimer = 0; nextTeacherState = 2;
+            } else if (teacherState === 1 && stateTimer > 600) { // 0.6 Sekunden Gelb-Phase
+                teacherState = nextTeacherState; stateTimer = 0;
+            } else if (teacherState === 2 && stateTimer > Math.random() * 1500 + 1000) {
+                teacherState = 1; stateTimer = 0; nextTeacherState = 0;
+            }
+
+            // Abschreib-Logik
             if (isWriting && progress < 100) {
-                if (teacherState === 2) {
-                    progress = 0; // Erwischt!
-                } else if (teacherState === 0) {
-                    progress += 0.2; // Langsamerer Fortschritt
+                if (teacherState === 1 || teacherState === 2) {
+                    // Erwischt während Gelb oder Rot!
+                    progress = 0; 
+                } else {
+                    // SEHR langsamer Fortschritt (ca. 15-20 Sekunden durchgängiges Schreiben)
+                    progress += 0.08; 
                 }
             }
+
+            // Ziel erreicht
             if (progress >= 100) {
                 document.getElementById('win-screen').classList.remove('hidden');
                 progress = 100;
@@ -60,15 +119,20 @@
 
         function draw() {
             ctx.clearRect(0,0,600,400);
-            drawTeacher(teacherState);
-
-            // Fortschrittsbalken
-            ctx.fillStyle = "#1e293b"; ctx.fillRect(150, 300, 300, 30);
-            ctx.fillStyle = (progress >= 100) ? "#10b981" : "#38bdf8";
-            ctx.fillRect(150, 300, progress * 3, 30);
             
+            drawTeacher();
+            drawPlayer();
+
+            // Fortschrittsbalken Hintergrund
+            ctx.fillStyle = "#1e293b"; ctx.fillRect(150, 350, 300, 20);
+            // Fortschrittsbalken Füllung
+            ctx.fillStyle = (progress >= 100) ? "#10b981" : "#38bdf8";
+            ctx.fillRect(150, 350, progress * 3, 20);
+            
+            // Text
             ctx.fillStyle = "white";
-            ctx.fillText("Fortschritt: " + Math.floor(progress) + "%", 270, 350);
+            ctx.font = "16px Courier New";
+            ctx.fillText("Fortschritt: " + Math.floor(progress) + "%", 230, 340);
             
             update();
             requestAnimationFrame(draw);
