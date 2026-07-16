@@ -11,10 +11,10 @@
     </style>
 </head>
 <body>
-    <h1>Level 1: Hol dir dein Handy!</h1>
+    <h1>Level 1: Handy holen & Raus hier!</h1>
     <canvas id="game" width="600" height="400"></canvas>
     <div id="win-screen" class="hidden">
-        <p>Geschafft! Ab in den Flur.</p>
+        <p>Erfolgreich entkommen!</p>
         <button id="next-btn" onclick="window.location.href='level2.html'">Zu Level 2</button>
     </div>
 
@@ -22,30 +22,32 @@
         const canvas = document.getElementById('game');
         const ctx = canvas.getContext('2d');
         
-        let player = {x: 50, y: 350};
+        let player = {x: 50, y: 350, hasPhone: false};
         let teacher = {x: 300, y: 200};
         let phone = {x: 550, y: 50};
+        let door = {x: 580, y: 350, w: 20, h: 50};
+        let confetti = [];
 
-        // Funktion zum Zeichnen eines Pixel-Menschen
         function drawPerson(x, y, color) {
             ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x + 10, y + 5, 8, 0, Math.PI * 2); // Kopf
-            ctx.fill();
-            ctx.fillRect(x + 5, y + 15, 10, 15); // Körper
+            ctx.beginPath(); ctx.arc(x + 10, y + 5, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillRect(x + 5, y + 15, 10, 15);
         }
 
         function update() {
-            // Lehrer verfolgt Spieler sanft
-            if (teacher.x < player.x) teacher.x += 1.0; else teacher.x -= 1.0;
-            if (teacher.y < player.y) teacher.y += 1.0; else teacher.y -= 1.0;
+            if (teacher.x < player.x) teacher.x += 0.8; else teacher.x -= 0.8;
+            if (teacher.y < player.y) teacher.y += 0.8; else teacher.y -= 0.8;
 
-            // Kollisionsabfrage
             if (Math.abs(player.x - teacher.x) < 20 && Math.abs(player.y - teacher.y) < 20) {
-                player = {x: 50, y: 350}; 
+                player = {x: 50, y: 350, hasPhone: false};
             }
 
-            if (Math.abs(player.x - phone.x) < 20 && Math.abs(player.y - phone.y) < 20) {
+            if (!player.hasPhone && Math.abs(player.x - phone.x) < 20 && Math.abs(player.y - phone.y) < 20) {
+                player.hasPhone = true;
+                for(let i=0; i<30; i++) confetti.push({x: phone.x, y: phone.y, dx: Math.random()*4-2, dy: Math.random()*4-2});
+            }
+
+            if (player.hasPhone && player.x > door.x - 20) {
                 document.getElementById('win-screen').classList.remove('hidden');
             }
         }
@@ -53,12 +55,19 @@
         function draw() {
             ctx.clearRect(0,0,600,400);
             
-            drawPerson(player.x, player.y, "#38bdf8"); // Spieler in Blau
-            drawPerson(teacher.x, teacher.y, "#ef4444"); // Lehrer in Rot
+            // Zeichne Ausgang
+            ctx.fillStyle = "#10b981"; ctx.fillRect(door.x, door.y, door.w, door.h);
             
-            // Handy als kleines gelbes Rechteck
-            ctx.fillStyle = "#f59e0b"; 
-            ctx.fillRect(phone.x, phone.y, 15, 15);
+            drawPerson(player.x, player.y, player.hasPhone ? "#fbbf24" : "#38bdf8");
+            drawPerson(teacher.x, teacher.y, "#ef4444");
+            
+            if(!player.hasPhone) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(phone.x, phone.y, 15, 15); }
+            
+            // Confetti Animation
+            confetti.forEach(c => {
+                c.x += c.dx; c.y += c.dy;
+                ctx.fillStyle = "gold"; ctx.fillRect(c.x, c.y, 4, 4);
+            });
             
             update();
             requestAnimationFrame(draw);
