@@ -2,13 +2,20 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontakt | Schul-Mentor</title>
     <style>
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.8; color: #333; margin: 0; text-align: center; }
-        nav { background: #1a2a3a; padding: 1rem; }
-        nav a { color: #ffffff; text-decoration: none; margin: 0 15px; font-weight: bold; }
-        .content { max-width: 600px; margin: 40px auto; padding: 20px; }
-        .link-box { display: block; margin: 15px 0; padding: 15px; background: #eef2f5; border-radius: 8px; text-decoration: none; color: #1a2a3a; font-weight: bold; }
+        :root { --primary: #1a2a3a; --accent: #4a90e2; }
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; }
+        nav { background: var(--primary); padding: 1rem; }
+        nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; }
+        .content { max-width: 500px; margin: 50px auto; padding: 20px; }
+        .contact-link { 
+            display: block; padding: 20px; margin: 15px 0; border: 2px solid var(--primary);
+            border-radius: 10px; text-decoration: none; color: var(--primary);
+            font-weight: bold; transition: 0.3s;
+        }
+        .contact-link:hover { background: var(--primary); color: #fff; }
     </style>
 </head>
 <body>
@@ -18,11 +25,10 @@
         <a href="kontakt.html">Kontakt</a>
     </nav>
     <div class="content">
-        <h2>Lass uns sprechen</h2>
-        <p>Wähle deinen bevorzugten Weg, um mit mir in Kontakt zu treten:</p>
-        <a href="mailto:denysoksha@gmail.com" class="link-box">E-Mail: denysoksha@gmail.com</a>
-        <a href="https://www.instagram.com/denys_ct09" class="link-box" target="_blank">Instagram: @denys_ct09</a>
-        <a href="https://www.tiktok.com/@johndoe88nvrfrgt" class="link-box" target="_blank">TikTok: @johndoe88nvrfrgt</a>
+        <h2>Kontakt</h2>
+        <a href="mailto:denysoksha@gmail.com" class="contact-link">E-Mail senden</a>
+        <a href="https://www.instagram.com/denys_ct09" class="contact-link" target="_blank">Instagram</a>
+        <a href="https://www.tiktok.com/@johndoe88nvrfrgt" class="contact-link" target="_blank">TikTok</a>
     </div>
 </body>
 </html>
