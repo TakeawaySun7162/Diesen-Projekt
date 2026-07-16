@@ -12,7 +12,7 @@
 </head>
 <body>
     <h1>Level 2: Unbemerkt abschreiben</h1>
-    <p>Leertaste halten zum Abschreiben. Nutze die gelbe Phase, aber drückst du bei ROT, fängst du von vorne an!</p>
+    <p>Leertaste halten zum Abschreiben. Nutze Gelb, aber hüte dich vor der unvorhersehbaren ROTEN Phase!</p>
     <canvas id="game" width="600" height="400"></canvas>
     <div id="win-screen" class="hidden">
         <p>Perfekt abgeschrieben! Auf zum Flur.</p>
@@ -26,52 +26,77 @@
         let progress = 0;
         let isWriting = false;
         
-        // Lehrer-Zustände: 0 = Grün (Tafel), 1 = Gelb (dreht sich), 2 = Rot (schaut zur Klasse)
+        // Lehrer-Zustände: 0 = Grün (Tafel), 1 = Gelb (dreht sich), 2 = Rot (Klasse)
         let teacherState = 0; 
-        let nextTeacherState = 2; // Merkt sich, wohin die Drehung geht
+        let nextTeacherState = 2; 
         let stateTimer = 0;
         let lastTime = Date.now();
+        
+        // Erste Zufallsdauer für die grüne Phase (zwischen 1.5 und 4 Sekunden)
+        let targetChangeDuration = Math.random() * 2500 + 1500; 
 
         function drawTeacher() {
-            // Körper
-            ctx.fillStyle = teacherState === 0 ? "#10b981" : (teacherState === 1 ? "#fbbf24" : "#ef4444");
-            ctx.fillRect(270, 100, 60, 80);
+            let primaryColor = teacherState === 0 ? "#10b981" : (teacherState === 1 ? "#fbbf24" : "#ef4444");
+            ctx.fillStyle = primaryColor;
             
             // Kopf
-            ctx.beginPath(); ctx.arc(300, 90, 30, 0, Math.PI * 2); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(300, 70, 20, 0, Math.PI * 2); ctx.fill(); 
+            
+            // Torso (Körper)
+            ctx.fillRect(280, 90, 40, 55);
+            
+            // Beine (Immer sichtbar)
+            ctx.fillRect(285, 145, 10, 45); // Linkes Bein
+            ctx.fillRect(305, 145, 10, 45); // Rechtes Bein
 
-            // Gesicht & Drehanimation
-            ctx.fillStyle = "black";
-            if (teacherState === 1) {
-                // Profilansicht (dreht sich gerade) -> nur ein Auge sichtbar
-                let eyeX = nextTeacherState === 2 ? 315 : 280; 
-                ctx.fillRect(eyeX, 75, 8, 8);
-            } else if (teacherState === 2) {
-                // Frontalansicht (schaut zur Klasse) -> böse Augen
-                ctx.fillRect(285, 80, 8, 8); 
-                ctx.fillRect(307, 80, 8, 8);
-                // Böse Augenbrauen
-                ctx.fillRect(282, 72, 12, 4);
-                ctx.fillRect(306, 72, 12, 4);
+            // Arme und Gesicht je nach Zustand animieren
+            if (teacherState === 0) {
+                // An der Tafel (Grün): Ein Arm unten, einer oben am Schreiben
+                ctx.fillRect(268, 90, 10, 35); // Linker Arm hängt
+                ctx.fillRect(322, 65, 10, 35); // Rechter Arm zeigt zur Tafel
+                
+                // Stück Kreide zeichnen
+                ctx.fillStyle = "white";
+                ctx.fillRect(325, 60, 5, 5);
+            } 
+            else if (teacherState === 1) {
+                // Am Umdrehen (Gelb): Arme bewegen sich zur Seite
+                ctx.fillRect(270, 90, 10, 40);
+                ctx.fillRect(320, 90, 10, 40);
+                
+                // Ein Auge im Profil sichtbar
+                ctx.fillStyle = "black";
+                let eyeX = nextTeacherState === 2 ? 310 : 284;
+                ctx.fillRect(eyeX, 65, 6, 6);
+            } 
+            else if (teacherState === 2) {
+                // Schaut in die Klasse (Rot): Wütende Pose (Arme in die Hüfte gestemmt)
+                ctx.fillRect(266, 95, 12, 25); // Ellbogen links ausgestellt
+                ctx.fillRect(322, 95, 12, 25); // Ellbogen rechts ausgestellt
+                
+                // Böses Gesicht zeichnen
+                ctx.fillStyle = "black";
+                ctx.fillRect(288, 65, 5, 5); // Linkes Auge
+                ctx.fillRect(307, 65, 5, 5); // Rechtes Auge
+                
+                // Böse, schräge Augenbrauen
+                ctx.fillRect(285, 58, 9, 3);
+                ctx.fillRect(306, 58, 9, 3);
+                
+                // Strenger Mund
+                ctx.fillRect(292, 78, 16, 3);
             }
         }
 
         function drawPlayer() {
-            // Spieler Körper
             ctx.fillStyle = "#38bdf8";
-            ctx.fillRect(280, 250, 40, 50);
-            // Kopf
-            ctx.beginPath(); ctx.arc(300, 235, 20, 0, Math.PI * 2); ctx.fill();
+            ctx.fillRect(280, 250, 40, 50); // Körper
+            ctx.beginPath(); ctx.arc(300, 235, 20, 0, Math.PI * 2); ctx.fill(); // Kopf
             
-            // Tisch
-            ctx.fillStyle = "#854d0e"; 
-            ctx.fillRect(240, 280, 120, 30);
-            
-            // Papier
-            ctx.fillStyle = "white";
-            ctx.fillRect(275, 285, 30, 20);
+            ctx.fillStyle = "#854d0e"; ctx.fillRect(240, 280, 120, 30); // Tisch
+            ctx.fillStyle = "white"; ctx.fillRect(275, 285, 30, 20); // Papier
 
-            // Arm & Stift (Abschreibanimation)
+            // Stift-Animation
             ctx.fillStyle = "#facc15"; 
             if (isWriting && progress < 100) {
                 let offset = Math.sin(Date.now() / 40) * 12;
@@ -87,27 +112,44 @@
             lastTime = now;
             stateTimer += dt;
 
-            // Lehrer Logik (flüssiges Umdrehen)
-            if (teacherState === 0 && stateTimer > Math.random() * 2000 + 1500) {
-                teacherState = 1; stateTimer = 0; nextTeacherState = 2;
-            } else if (teacherState === 1 && stateTimer > 600) { // 0.6 Sekunden Gelb-Phase
-                teacherState = nextTeacherState; stateTimer = 0;
-            } else if (teacherState === 2 && stateTimer > Math.random() * 1500 + 1000) {
-                teacherState = 1; stateTimer = 0; nextTeacherState = 0;
-            }
-
-            // Abschreib-Logik: JETZT IST GELB SICHER!
-            if (isWriting && progress < 100) {
-                if (teacherState === 2) {
-                    // Erwischt! (Nur bei Rot)
-                    progress = 0; 
-                } else {
-                    // Fortschritt bei Grün und Gelb
-                    progress += 0.08; 
+            // VOLLKOMMEN ZUFÄLLIGE LEHRER-KI
+            if (stateTimer >= targetChangeDuration) {
+                stateTimer = 0;
+                
+                if (teacherState === 0) {
+                    // Von Grün zu Gelb (Vorwarnung)
+                    teacherState = 1;
+                    nextTeacherState = 2;
+                    targetChangeDuration = Math.random() * 300 + 400; // Gelb-Dauer: 0.4 bis 0.7 Sek
+                } 
+                else if (teacherState === 1) {
+                    // Von Gelb zum Ziel-Zustand (Rot oder wieder Grün)
+                    teacherState = nextTeacherState;
+                    if (teacherState === 2) {
+                        // Wie lange starrt er die Klasse an? (0.8 bis 3 Sekunden - völlig unberechenbar!)
+                        targetChangeDuration = Math.random() * 2200 + 800; 
+                    } else {
+                        // Wie lange schreibt er an der Tafel? (1.2 bis 4.5 Sekunden)
+                        targetChangeDuration = Math.random() * 3300 + 1200; 
+                    }
+                } 
+                else if (teacherState === 2) {
+                    // Von Rot zurück zu Gelb (dreht sich wieder um)
+                    teacherState = 1;
+                    nextTeacherState = 0;
+                    targetChangeDuration = Math.random() * 300 + 400; 
                 }
             }
 
-            // Ziel erreicht
+            // Abschreib-Fortschritt
+            if (isWriting && progress < 100) {
+                if (teacherState === 2) {
+                    progress = 0; // Nur bei echtem ROT fliegt man auf!
+                } else {
+                    progress += 0.2; // Schnelles, flüssiges Befüllen bei Grün und Gelb
+                }
+            }
+
             if (progress >= 100) {
                 document.getElementById('win-screen').classList.remove('hidden');
                 progress = 100;
@@ -120,13 +162,11 @@
             drawTeacher();
             drawPlayer();
 
-            // Fortschrittsbalken Hintergrund
+            // Balken
             ctx.fillStyle = "#1e293b"; ctx.fillRect(150, 350, 300, 20);
-            // Fortschrittsbalken Füllung
             ctx.fillStyle = (progress >= 100) ? "#10b981" : "#38bdf8";
             ctx.fillRect(150, 350, progress * 3, 20);
             
-            // Text
             ctx.fillStyle = "white";
             ctx.font = "16px Courier New";
             ctx.fillText("Fortschritt: " + Math.floor(progress) + "%", 230, 340);
