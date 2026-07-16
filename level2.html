@@ -12,10 +12,10 @@
 </head>
 <body>
     <h1>Level 2: Unbemerkt abschreiben</h1>
-    <p>Leertaste halten zum Abschreiben, wenn der Lehrer zur Tafel schaut!</p>
+    <p>Leertaste halten zum Abschreiben. Vorsicht bei Gelb!</p>
     <canvas id="game" width="600" height="400"></canvas>
     <div id="win-screen" class="hidden">
-        <p>Erwischt! Ab in den Flur.</p>
+        <p>Erledigt! Auf zum Ausgang.</p>
         <button id="next-btn" onclick="window.location.href='level3.html'">Zu Level 3</button>
     </div>
 
@@ -25,38 +25,50 @@
         
         let progress = 0;
         let isWriting = false;
-        let teacherLooking = false; // true = schaut zur Klasse
-        
-        // Lehrer-Logik: Wechselt zufällig den Blick
+        // States: 0 = grün (sicher), 1 = gelb (warnung), 2 = rot (erwischt)
+        let teacherState = 0; 
+
+        // Lehrer-Zustände steuern
         setInterval(() => {
-            teacherLooking = Math.random() > 0.5;
-        }, 1500);
+            let rand = Math.random();
+            if (rand < 0.6) teacherState = 0;
+            else if (rand < 0.8) teacherState = 1;
+            else teacherState = 2;
+        }, 1200);
+
+        function drawTeacher(state) {
+            ctx.fillStyle = state === 0 ? "#10b981" : (state === 1 ? "#fbbf24" : "#ef4444");
+            ctx.beginPath(); ctx.arc(300, 100, 40, 0, Math.PI * 2); ctx.fill(); // Kopf
+            // Böse Augen
+            ctx.fillStyle = "black";
+            ctx.fillRect(280, 85, 8, 8); ctx.fillRect(312, 85, 8, 8);
+        }
 
         function update() {
-            if (isWriting) {
-                if (teacherLooking) {
+            if (isWriting && progress < 100) {
+                if (teacherState === 2) {
                     progress = 0; // Erwischt!
-                } else {
-                    progress += 0.5; // Fortschritt machen
+                } else if (teacherState === 0) {
+                    progress += 0.2; // Langsamerer Fortschritt
                 }
             }
             if (progress >= 100) {
                 document.getElementById('win-screen').classList.remove('hidden');
+                progress = 100;
             }
         }
 
         function draw() {
             ctx.clearRect(0,0,600,400);
-            
-            // Lehrer (oben mittig)
-            ctx.fillStyle = teacherLooking ? "#ef4444" : "#10b981";
-            ctx.fillRect(250, 50, 100, 100);
-            ctx.fillStyle = "white";
-            ctx.fillText(teacherLooking ? "LEHRER GUCKT!" : "Lehrer schreibt Tafel", 260, 40);
+            drawTeacher(teacherState);
 
             // Fortschrittsbalken
             ctx.fillStyle = "#1e293b"; ctx.fillRect(150, 300, 300, 30);
-            ctx.fillStyle = "#38bdf8"; ctx.fillRect(150, 300, progress * 3, 30);
+            ctx.fillStyle = (progress >= 100) ? "#10b981" : "#38bdf8";
+            ctx.fillRect(150, 300, progress * 3, 30);
+            
+            ctx.fillStyle = "white";
+            ctx.fillText("Fortschritt: " + Math.floor(progress) + "%", 270, 350);
             
             update();
             requestAnimationFrame(draw);
