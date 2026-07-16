@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Flucht aus der Schule - Retro Spiel</title>
+    <style>
+        body { background: #0f172a; color: #38bdf8; text-align: center; font-family: 'Courier New', monospace; }
+        #game { background: #1e293b; border: 4px solid #38bdf8; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <h1>Schul-Flucht: Level <span id="lvl">1</span></h1>
+    <canvas id="game" width="600" height="400"></canvas>
+    <p id="msg">Nutze Pfeiltasten oder Leertaste!</p>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        let lvl = 1;
+        let player = {x: 50, y: 300};
+        let teacherState = "calm"; // Für Level 2
+
+        function loop() {
+            ctx.fillStyle = "#1e293b";
+            ctx.fillRect(0,0,600,400);
+            
+            if(lvl === 1) { // Level 1: Ausweichen
+                ctx.fillStyle = "red"; ctx.fillRect(300, 150, 50, 50); // Lehrer
+                ctx.fillStyle = "yellow"; ctx.fillRect(550, 50, 30, 30); // Handy
+                if(player.x > 250 && player.x < 350 && player.y > 100 && player.y < 200) player = {x: 50, y: 300}; // Reset
+                if(player.x > 500) lvl = 2; // Nächstes Level
+            }
+            
+            if(lvl === 2) { // Level 2: Timing
+                document.getElementById('msg').innerText = "Leertaste drücken, wenn Lehrer NICHT guckt!";
+                ctx.fillStyle = teacherState === "calm" ? "green" : "red";
+                ctx.fillRect(250, 50, 100, 100);
+                setTimeout(() => teacherState = (teacherState === "calm" ? "angry" : "calm"), 2000);
+            }
+
+            if(lvl === 3) { // Level 3: Labyrinth
+                document.getElementById('msg').innerText = "Weg zum Ausgang finden!";
+                ctx.fillStyle = "white"; ctx.fillRect(100, 100, 400, 20); // Mauer
+            }
+
+            // Spieler zeichnen
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillRect(player.x, player.y, 20, 20);
+            document.getElementById('lvl').innerText = lvl;
+            requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight') player.x += 20;
+            if(e.key === 'ArrowLeft') player.x -= 20;
+            if(e.key === 'ArrowUp') player.y -= 20;
+            if(e.key === 'ArrowDown') player.y += 20;
+            if(e.key === ' ' && lvl === 2) {
+                if(teacherState === "calm") lvl = 3; else player = {x: 50, y: 300};
+            }
+        });
+        loop();
+    </script>
+</body>
+</html>
