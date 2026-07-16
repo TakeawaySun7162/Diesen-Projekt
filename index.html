@@ -3,47 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schüler-Beratung | Gemeinsam durch die Schulzeit</title>
+    <title>Schul-Mentor | Beratung & Unterstützung</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9f9f9; }
-        header { background: #4a90e2; color: white; padding: 2rem; text-align: center; }
-        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #4a90e2; }
-        .contact-btn { display: inline-block; background: #e24a4a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
-        .contact-btn:hover { background: #c93d3d; }
-        footer { text-align: center; margin-top: 40px; color: #888; font-size: 0.9rem; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+        
+        nav { background: #333; color: white; padding: 1rem; position: sticky; top: 0; display: flex; justify-content: center; gap: 20px; }
+        nav a { color: white; text-decoration: none; font-weight: bold; }
+        
+        section { padding: 60px 20px; max-width: 900px; margin: auto; }
+        #start { background: #4a90e2; color: white; text-align: center; }
+        #faq { background: #f4f4f4; }
+        
+        h2 { color: #4a90e2; margin-bottom: 20px; }
+        .faq-item { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .contact-btn { display: inline-block; background: #e24a4a; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+        footer { text-align: center; padding: 20px; background: #333; color: white; }
     </style>
 </head>
 <body>
 
-    <header>
+    <nav>
+        <a href="#start">Startseite</a>
+        <a href="#faq">Typische Fragen</a>
+        <a href="#kontakt">Kontakt</a>
+    </nav>
+
+    <section id="start">
         <h1>Schul-Mentor</h1>
-        <p>Tipps & Hilfe, um stressfrei durch die Schule zu kommen</p>
-    </header>
+        <p>Gemeinsam meistern wir deine Schulzeit. Professionelle Beratung für Schüler.</p>
+    </section>
 
-    <div class="container">
-        <h2>Brauchst du Unterstützung?</h2>
-        <p>Die Schule kann manchmal ganz schön stressig sein – ob bei der Organisation, bei Lernschwierigkeiten oder einfach, weil der Druck zu groß wird. Du musst da nicht alleine durch!</p>
-        
-        <h3>Wie ich dir helfen kann:</h3>
-        <ul>
-            <li>Tipps für effektives Zeitmanagement.</li>
-            <li>Methoden, um Prüfungsangst zu reduzieren.</li>
-            <li>Strukturierung deines Schulalltags.</li>
-            <li>Ein offenes Ohr für deine schulischen Sorgen.</li>
-        </ul>
+    <section id="faq">
+        <h2>Typische Fragen (FAQ)</h2>
+        <div class="faq-item">
+            <strong>Wie läuft ein Beratungsgespräch ab?</strong>
+            <p>Wir klären in einem ersten Austausch, wo der Schuh drückt, und erarbeiten dann gemeinsam einen Schritt-für-Schritt-Plan.</p>
+        </div>
+        <div class="faq-item">
+            <strong>Kostet das etwas?</strong>
+            <p>Die erste Orientierung ist für Schüler komplett kostenlos und unverbindlich.</p>
+        </div>
+        <div class="faq-item">
+            <strong>Muss ich meine Eltern einbeziehen?</strong>
+            <p>Das entscheidest du. Ich unterstütze dich primär darin, selbstständige Lösungswege zu finden.</p>
+        </div>
+    </section>
 
-        <hr>
-
-        <h2>Schreib mir!</h2>
-        <p>Wenn du bereit bist, melde dich einfach bei mir. Wir finden gemeinsam einen Weg, damit du entspannter zur Schule gehst.</p>
-        
-        <!-- Ersetze deine-email@beispiel.de mit deiner echten Mail-Adresse -->
-        <a href="mailto:deine-email@beispiel.de" class="contact-btn">Jetzt Beratung anfragen</a>
-    </div>
+    <section id="kontakt">
+        <h2>Kontakt</h2>
+        <p>Du hast eine konkrete Frage oder brauchst Unterstützung bei einem Problem? Schreib mir einfach eine Nachricht.</p>
+        <a href="mailto:deine-email@beispiel.de" class="contact-btn">Beratung anfragen</a>
+    </section>
 
     <footer>
-        &copy; 2026 Schüler-Beratung – Dein Erfolg ist mein Ziel.
+        &copy; 2026 Schul-Mentor | Dein Erfolg ist mein Ziel.
     </footer>
 
 </body>
